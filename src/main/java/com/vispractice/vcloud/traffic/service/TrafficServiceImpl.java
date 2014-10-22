@@ -2,6 +2,7 @@ package com.vispractice.vcloud.traffic.service;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,9 @@ public class TrafficServiceImpl implements TrafficService {
 		String cid = "1:"+id;
 		String defaultNic = "eth0";
 		
-		if(Script.runSimpleBashScript("tc class show dev "+defaultNic).indexOf(cid) == -1){
+		String exists = Script.runSimpleBashScript("tc class show dev "+defaultNic);
+		
+		if(StringUtils.isNotBlank(exists) && exists.indexOf(cid) == -1){
 			Script.runSimpleBashScript("tc class add dev "+defaultNic+" parent 1:1 classid "+cid+" htb rate "+rate+"Mbit ceil "+rate+"Mbit");
 			Script.runSimpleBashScript("tc filter add dev "+defaultNic+" parent 1:0 protocol ip handle "+id+" fw classid "+cid);
 			s_logger.debug("init class {} and rate {} for dev {}",
@@ -69,7 +72,9 @@ public class TrafficServiceImpl implements TrafficService {
 		String cid = "1:"+id;
 		String defaultNic = "eth2";
 		
-		if(Script.runSimpleBashScript("tc class show dev "+defaultNic).indexOf(cid) == -1){
+		String exists = Script.runSimpleBashScript("tc class show dev "+defaultNic);
+		
+		if(StringUtils.isNotBlank(exists) && exists.indexOf(cid) == -1){
 			Script.runSimpleBashScript("tc class add dev "+defaultNic+" parent 1:1 classid "+cid+" htb rate "+rate+"Mbit ceil "+rate+"Mbit");
 			Script.runSimpleBashScript("tc filter add dev "+defaultNic+" parent 1:0 protocol ip handle "+id+" fw classid "+cid);
 			s_logger.debug("init class {} and rate {} for dev {}",
