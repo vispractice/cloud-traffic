@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.cloud.utils.script.Script;
+import com.vispractice.vcloud.traffic.domain.DebugInfo;
+import com.vispractice.vcloud.traffic.domain.ITBMangle;
+import com.vispractice.vcloud.traffic.domain.TCClass;
+import com.vispractice.vcloud.traffic.domain.TCQdisc;
 
 @Service("trafficService")
 public class TrafficServiceImpl implements TrafficService {
@@ -81,24 +85,21 @@ public class TrafficServiceImpl implements TrafficService {
 				+ ip + " -j MARK --set-mark " + (MARK_BASE_RATE + rate));
 	}
 
-	public String dumpDebugInfo() {
-		StringBuffer info = new StringBuffer();
+	public DebugInfo dumpDebugInfo() {
+		TCQdisc eth0Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth0"));
+		TCQdisc eth1Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth1"));
+		TCQdisc eth2Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth2"));
+		TCClass eth0Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth0"));
+		TCClass eth1Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth1"));
+		TCClass eth2Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth2"));
 		
-		info.append("dump eth0:\n");
-		info.append(Script.runSimpleBashScript("tc qdisc show dev eth0"));
-		info.append(Script.runSimpleBashScript("tc class show dev eth0"));
-		info.append("\ndump eth1:\n");
-		info.append(Script.runSimpleBashScript("tc qdisc show dev eth1"));
-		info.append(Script.runSimpleBashScript("tc class show dev eth1"));
-		info.append("\ndump eth2:\n");
-		info.append(Script.runSimpleBashScript("tc qdisc show dev eth2"));
-		info.append(Script.runSimpleBashScript("tc class show dev eth2"));
-		info.append("\ndump iptables:\n");
-		info.append(Script.runSimpleBashScript("iptables -L -n -t mangle"));
-		info.append(Script.runSimpleBashScript("iptables -L -n -t filter"));
-		info.append(Script.runSimpleBashScript("iptables -L -n -t nat"));
+		ITBMangle mangle = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t mangle"));
+		ITBMangle filter = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t filter"));
+		ITBMangle nat = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t nat"));
 		
-		return info.toString();
+		return new DebugInfo(eth0Qdisc, eth1Qdisc, eth2Qdisc,
+				eth0Class, eth1Class, eth2Class,
+				mangle, filter, nat);
 	}
 	
 	private String[] findHostNics(){

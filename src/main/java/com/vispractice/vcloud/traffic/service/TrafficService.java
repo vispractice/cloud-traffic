@@ -1,8 +1,10 @@
 package com.vispractice.vcloud.traffic.service;
 
+import com.vispractice.vcloud.traffic.domain.DebugInfo;
+
 public interface TrafficService {
 
-	enum TC_ALG{
+	public enum TC_ALG{
 		CBQ,
 		HTB
 	}
@@ -48,5 +50,5 @@ public interface TrafficService {
 	 * 导出调试日志
 	 * @return
 	 */
-	public String dumpDebugInfo();
+	public DebugInfo dumpDebugInfo();
 }
