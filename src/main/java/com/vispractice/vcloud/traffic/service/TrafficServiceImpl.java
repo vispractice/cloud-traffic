@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.cloud.utils.script.OutputInterpreter;
 import com.cloud.utils.script.Script;
 import com.vispractice.vcloud.traffic.domain.DebugInfo;
 import com.vispractice.vcloud.traffic.domain.ITBMangle;
@@ -37,7 +38,7 @@ public class TrafficServiceImpl implements TrafficService {
 		
 		if(alg.equals(TC_ALG.HTB)){
 			Script.runSimpleBashScript("tc qdisc add dev " + nicName + " root handle 1: htb");
-			Script.runSimpleBashScript("tc class add dev " + nicName + " parent 1: classid 1:1 htb rate "+startRateInMb+"Mbit ceil "+startRateInMb+"Mbit");
+			Script.runSimpleBashScript("tc class add dev " + nicName + " parent 1: classid 1:1 htb rate "+endRateInMb+"Mbit ceil "+startRateInMb+"Mbit");
 			s_logger.debug("init htb nic root qdisc and class");
 		}else{
 			s_logger.warn("no other alg implemented");
@@ -91,16 +92,16 @@ public class TrafficServiceImpl implements TrafficService {
 	}
 
 	public DebugInfo dumpDebugInfo() {
-		TCQdisc eth0Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth0"));
-		TCQdisc eth1Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth1"));
-		TCQdisc eth2Qdisc = new TCQdisc(Script.runSimpleBashScript("tc qdisc show dev eth2"));
-		TCClass eth0Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth0"));
-		TCClass eth1Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth1"));
-		TCClass eth2Class = new TCClass(Script.runSimpleBashScript("tc class show dev eth2"));
+		TCQdisc eth0Qdisc = new TCQdisc(runBashScript("tc qdisc show dev eth0"));
+		TCQdisc eth1Qdisc = new TCQdisc(runBashScript("tc qdisc show dev eth1"));
+		TCQdisc eth2Qdisc = new TCQdisc(runBashScript("tc qdisc show dev eth2"));
+		TCClass eth0Class = new TCClass(runBashScript("tc class show dev eth0"));
+		TCClass eth1Class = new TCClass(runBashScript("tc class show dev eth1"));
+		TCClass eth2Class = new TCClass(runBashScript("tc class show dev eth2"));
 		
-		ITBMangle mangle = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t mangle"));
-		ITBMangle filter = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t filter"));
-		ITBMangle nat = new ITBMangle(Script.runSimpleBashScript("iptables -L -n -t nat"));
+		ITBMangle mangle = new ITBMangle(runBashScript("iptables -L -n -t mangle"));
+		ITBMangle filter = new ITBMangle(runBashScript("iptables -L -n -t filter"));
+		ITBMangle nat = new ITBMangle(runBashScript("iptables -L -n -t nat"));
 		
 		return new DebugInfo(eth0Qdisc, eth1Qdisc, eth2Qdisc,
 				eth0Class, eth1Class, eth2Class,
@@ -115,4 +116,19 @@ public class TrafficServiceImpl implements TrafficService {
 		Script.runSimpleBashScript("tc qdisc del " + nicName + " root");
 	}
 
+	private String runBashScript(String command){
+		Script s = new Script("/bin/bash", 0);
+        s.add("-c");
+        s.add(command);
+
+        OutputInterpreter.AllLinesParser parser = new OutputInterpreter.AllLinesParser();
+        if (s.execute(parser) != null)
+            return null;
+
+        String result = parser.getLines();
+        if (result == null || result.trim().isEmpty())
+            return null;
+        else
+            return result.trim();
+	}
 }
