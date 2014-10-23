@@ -10,8 +10,8 @@ public class DebugInfo {
 	private TCClass eth2Class;
 	
 	private ITBMangle mangle;
-	private ITBMangle filter;
-	private ITBMangle nat;
+	private ITBFilter filter;
+	private ITBNat nat;
 	public TCQdisc getEth0Qdisc() {
 		return eth0Qdisc;
 	}
@@ -54,22 +54,21 @@ public class DebugInfo {
 	public void setMangle(ITBMangle mangle) {
 		this.mangle = mangle;
 	}
-	public ITBMangle getFilter() {
+	public ITBFilter getFilter() {
 		return filter;
 	}
-	public void setFilter(ITBMangle filter) {
+	public void setFilter(ITBFilter filter) {
 		this.filter = filter;
 	}
-	public ITBMangle getNat() {
+	public ITBNat getNat() {
 		return nat;
 	}
-	public void setNat(ITBMangle nat) {
+	public void setNat(ITBNat nat) {
 		this.nat = nat;
 	}
-	
 	public DebugInfo(TCQdisc eth0Qdisc, TCQdisc eth1Qdisc, TCQdisc eth2Qdisc,
 			TCClass eth0Class, TCClass eth1Class, TCClass eth2Class,
-			ITBMangle mangle, ITBMangle filter, ITBMangle nat) {
+			ITBMangle mangle, ITBFilter filter, ITBNat nat) {
 		super();
 		this.eth0Qdisc = eth0Qdisc;
 		this.eth1Qdisc = eth1Qdisc;

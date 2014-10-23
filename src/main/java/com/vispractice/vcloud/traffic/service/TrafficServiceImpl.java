@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.cloud.utils.script.OutputInterpreter;
 import com.cloud.utils.script.Script;
 import com.vispractice.vcloud.traffic.domain.DebugInfo;
+import com.vispractice.vcloud.traffic.domain.ITBFilter;
 import com.vispractice.vcloud.traffic.domain.ITBMangle;
+import com.vispractice.vcloud.traffic.domain.ITBNat;
 import com.vispractice.vcloud.traffic.domain.TCClass;
 import com.vispractice.vcloud.traffic.domain.TCQdisc;
 
@@ -100,8 +102,8 @@ public class TrafficServiceImpl implements TrafficService {
 		TCClass eth2Class = new TCClass(runBashScript("tc class show dev eth2"));
 		
 		ITBMangle mangle = new ITBMangle(runBashScript("iptables -L -n -t mangle"));
-		ITBMangle filter = new ITBMangle(runBashScript("iptables -L -n -t filter"));
-		ITBMangle nat = new ITBMangle(runBashScript("iptables -L -n -t nat"));
+		ITBFilter filter = new ITBFilter(runBashScript("iptables -L -n -t filter"));
+		ITBNat nat = new ITBNat(runBashScript("iptables -L -n -t nat"));
 		
 		return new DebugInfo(eth0Qdisc, eth1Qdisc, eth2Qdisc,
 				eth0Class, eth1Class, eth2Class,

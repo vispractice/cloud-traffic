@@ -57,7 +57,7 @@
 	<!-- Page content of course! -->
 	<main class="bs-docs-masthead" id="content" role="main">
 	<div class="container">
-		${debugInfo}
+		Developing ...
 	</div>
 	</main>
 
