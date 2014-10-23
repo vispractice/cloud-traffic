@@ -28,6 +28,7 @@ public class TrafficController {
 	
 	@RequestMapping(value = "/traffic", method = RequestMethod.GET)  
 	public String trafficPage(ModelMap model) {
+		model.addAttribute("serviceReseted", tc.serviceReseted());
         return "traffic";  
     }
 	
@@ -46,6 +47,12 @@ public class TrafficController {
 	public TCResponse clearTrafficNics() {
 		tc.clearTrafficNics();
         return new TCResponse(-1,"");
+    }
+	
+	@ResponseBody
+	@RequestMapping(value = "/serviceReseted", method = RequestMethod.GET)  
+	public TCResponse serviceReseted() {
+        return new TCResponse(-1, String.valueOf(tc.serviceReseted()));
     }
 	
 	@ResponseBody

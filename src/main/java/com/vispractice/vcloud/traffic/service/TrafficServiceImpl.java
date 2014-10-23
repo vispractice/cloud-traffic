@@ -133,4 +133,10 @@ public class TrafficServiceImpl implements TrafficService {
         else
             return result.trim();
 	}
+
+	@Override
+	public boolean serviceReseted() {
+		String exists = Script.runSimpleBashScript("tc qdisc show dev eth0");
+		return StringUtils.isBlank(exists);
+	}
 }

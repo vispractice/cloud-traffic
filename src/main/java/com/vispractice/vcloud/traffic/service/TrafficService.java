@@ -51,4 +51,10 @@ public interface TrafficService {
 	 * @return
 	 */
 	public DebugInfo dumpDebugInfo();
+	
+	/**
+	 * 服务是否被重置
+	 * @return
+	 */
+	public boolean serviceReseted();
 }

@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +71,17 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12" role="main">
+				<c:choose>
+					<c:when test="${serviceReseted}">
+						<div class="bs-docs-section">
+							<div class="alert alert-danger" role="alert">
+								<strong>WARNNING</strong>
+								Traffic Control Service Was Reseted! Must Setup Again !!!
+							</div>
+						</div>
+					</c:when>
+				</c:choose>
+					
 				<div class="bs-docs-section">
 					<h1 id="overview" class="page-header">clearTrafficNics</h1>
 					<form class="form-inline" role="form" onsubmit="return TC.clearTrafficNics();">
